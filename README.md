@@ -11,15 +11,43 @@ but only cares about golang on alpine3.6 (smallest, and most secure)
 
 Use it as ususal. If you were using **golang/alpine** or **golang/1.9.2-alpine3.6** or similar,
 just replace the image name to **banzaicloud/golang:v1.10beta1**
+
+Check the version
 ```
 $ docker run banzaicloud/golang:v1.10beta1 go version
 go version go1.10beta1 linux/amd64
 ```
 
+## Build-cache
+
+One of the main changes in go1.10 is the build cache. The [release notes draft](https://beta.golang.org/doc/go1.10#build)
+says:
+
+> The go build command now maintains a cache of recently built packages, separate from the installed packages ...
+The effect of the cache should be to speed builds ... The old advice to add the -i flag for speed, as in go build -i or go test -i, is no longer necessary: builds run just as fast without -i
+
+To take advantage of this new feature, mount the go build cache into a name volume:
+
+```
+  docker run \
+    -v $PWD:/go/src/github/myswlf/myproject \
+    -w /go/src/github/myswlf/myproject \
+    -v go-build:/root/.cache/go-build/ \
+    go build .
+```
+
+For the first time it will take longer, but for repeated builds it will be crazy fast: just a couple of sec.
+
+Go1.10 introduces: `go env GOCACHE`
+
+- $HOME/.cache/go-build (linux)
+- $HOME/Library/Caches/go-build (mac)
+- %LocalAppData%/go-build (win)
+
 ## Changes from original
 
 2 [changes](https://github.com/banzaicloud/docker-golang/commit/d1b5e6b7a90b2cba6e30659024d942616279fe39) were made:
-- source patches are removed (they dont fit the 1.10 branch, so they are just removed them careless)
+- source patches are removed (they dont fit the 1.10 branch, so they are just removed)
 - GOLANG_VERSION env variable is set to 1.10beta1 
 
 
