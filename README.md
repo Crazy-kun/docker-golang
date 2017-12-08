@@ -26,9 +26,10 @@ says:
 > The go build command now maintains a cache of recently built packages, separate from the installed packages ...
 The effect of the cache should be to speed builds ... The old advice to add the -i flag for speed, as in go build -i or go test -i, is no longer necessary: builds run just as fast without -i
 
-To take advantage of this new feature, mount the go build cache into a name volume:
+To take advantage of this new feature, mount the go build cache into a name volume: `-v go-build:/root/.cache/go-build`
+So you can build your project like:
 
-```
+```diff
   docker run \
     -v $PWD:/go/src/github/myswlf/myproject \
     -w /go/src/github/myswlf/myproject \
